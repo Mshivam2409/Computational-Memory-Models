@@ -8,5 +8,5 @@ int main()
     m.Encode(v);
     m.Encode(v1);
     m.ViewMemory();
-    m.CalculateSimilarity(vector<int>(10, 0));
+    cout << (m.Recognize(vector<int>(10, 1), 0.1) == true ? "true" : "false");
 }

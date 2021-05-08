@@ -6,6 +6,8 @@
 #include <utils/parallel-util.hpp>
 #include <utils/math.hpp>
 #include <execution>
+#include <experimental/numeric>
+
 namespace MultiTraceTheory
 {
 
@@ -21,7 +23,8 @@ namespace MultiTraceTheory
         ~Minerva();
         void Encode(std::vector<int>);
         void ViewMemory();
-        void CalculateSimilarity(std::vector<int>);
+        std::vector<double> CalculateSimilarity(std::vector<int>);
+        bool Recognize(std::vector<int>, double);
     };
 
     Minerva ::Minerva(double learning_rate)
@@ -56,12 +59,20 @@ namespace MultiTraceTheory
                   << "Memory Allocated: " << sizeof(int) * memory.size() * 10 << " Bytes";
     }
 
-    void Minerva::CalculateSimilarity(std::vector<int> probe)
+    std::vector<double> Minerva::CalculateSimilarity(std::vector<int> probe)
     {
         std::vector<double> similarity_matrix(memory.size());
-        std::transform(std::execution::par, memory.cbegin(), memory.cend(), similarity_matrix.begin(),
+        std::transform(std::execution::par_unseq, memory.cbegin(), memory.cend(), similarity_matrix.begin(),
                        [probe](std::vector<int> c) -> double { return exp(-1 * modelmath::vectors_distance(c, probe)); });
         std::cout << similarity_matrix;
+        return similarity_matrix;
+    }
+
+    bool Minerva::Recognize(std::vector<int> cue, double threshold)
+    {
+        auto ss = this->CalculateSimilarity(cue);
+        double summed = std::accumulate(ss.begin(), ss.end(), 0.0);
+        return summed > threshold ? true : false;
     }
 
 } // namespace MultiTraceTheory
