@@ -7,7 +7,7 @@ set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 
 project(Memory)
 # I../includes
-include_directories(includes)
+include_directories(include)
 
 # puts all .cpp files inside src to the SOURCES variable
 file(GLOB SOURCES src/*.cpp)
